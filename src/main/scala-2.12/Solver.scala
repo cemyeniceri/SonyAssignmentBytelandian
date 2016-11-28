@@ -5,7 +5,7 @@ import scala.annotation.tailrec
   */
 object Solver {
 
-  //
+  // evaluates result for generated cityGraph
   def evaluateStepCount(cityGraph: Map[String, Set[String]]): Int = {
     evaluateStepCountRec(0, cityGraph)
   }
@@ -16,8 +16,13 @@ object Solver {
       numberOfSteps
     else{
 
+      // finds to be connected city pairs
       val connectedCities = createConnectedCities(cityGraph)
+
+      // combine pairs and update cityGraph
       val newCityGraph = connectCitiesAndUpdateMap(cityGraph, connectedCities)
+
+      //increment numberOfStep and call helper method with updated cityGraph
       evaluateStepCountRec(numberOfSteps + 1, newCityGraph)
     }
   }
@@ -27,7 +32,7 @@ object Solver {
     createConnectedCitiesRec(cityGraph, cityGraph, List())
   }
 
-  //consCityGraph inputundan daolyı tailRec değil
+  // not tailrec because of consCityGraph input
   def createConnectedCitiesRec(consCityGraph: Map[String, Set[String]], cityGraph: Map[String, Set[String]], acc: List[Pair]): List[Pair] = {
     if(cityGraph.isEmpty)
       acc
@@ -35,20 +40,27 @@ object Solver {
       val (key, values) = cityGraph.head
 
       // already in use check
+      // if a city has been used already, dont estimate again with another city
       if(acc.exists(x=> x.left == key || x.right == key))
         createConnectedCitiesRec(consCityGraph, cityGraph.tail, acc)
       else{
+
+        // find deepest city number
         val theBestCityToConnect = getSmallestConnection(consCityGraph, values)
+
+        // check again, either used with another city
         val newAcc = if(!acc.exists(x=> x.left == theBestCityToConnect || x.right == theBestCityToConnect)){
           acc :+ Pair(key, theBestCityToConnect)
         }else{
           acc
         }
+
         createConnectedCitiesRec(consCityGraph, cityGraph.tail, newAcc)
       }
     }
   }
 
+  // obtain city number which has smallest connections set
   def getSmallestConnection(cityGraph: Map[String, Set[String]], values: Set[String]): String = {
 
     val t = values.map{x=>
@@ -58,6 +70,8 @@ object Solver {
     t.minBy(_._2)._1
   }
 
+
+  // combine cities and update cityGraph due to combination results
   def connectCitiesAndUpdateMap(cityGraph: Map[String, Set[String]], pair: List[Pair]) : Map[String, Set[String]] = {
     connectCitiesAndUpdateMapRec(cityGraph, pair)
   }
@@ -67,19 +81,27 @@ object Solver {
     if(pair.isEmpty)
       cityGraph
     else{
+
+      // find left element of pair and remove right connection from connection set
       val leftMapEntry = cityGraph.find(_._1 == pair.head.left).get
       val leftSet = leftMapEntry._2
       val newLeftSet = leftSet.filterNot(_ == pair.head.right)
 
+      // find right element of pair and remove left connection from connection set
       val rightMapEntry = cityGraph.find(_._1 == pair.head.right).get
       val rightSet = rightMapEntry._2
       val newRightSet = rightSet.filterNot(_ == pair.head.left)
 
+      // right element of pair will be removed anymore, so update set of element with right's set
       val finalLeftSet = newLeftSet ++ newRightSet
       val newLeftMapEntry = (leftMapEntry._1 -> finalLeftSet)
 
+
+      // remove right element and existent left element from cityGraph, then add new left element
       val modifiedCityGraph = cityGraph.filterNot(_ == leftMapEntry).filterNot(_ == rightMapEntry) + (newLeftMapEntry)
 
+
+      // merge connections, if some of cityGraph elements have right element
       val mergedMap = mergeConnecitons(modifiedCityGraph, pair.head)
 
       connectCitiesAndUpdateMapRec(mergedMap, pair.tail)

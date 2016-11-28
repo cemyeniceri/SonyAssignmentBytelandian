@@ -65,7 +65,6 @@ class SolverSpec extends FunSuite{
 
   test("mergeConnecitons with valid inputs") {
 
-
     val cityGraph = Map("2" -> Set("1", "3"), "3"-> Set("2"), "0"-> Set("2"))
 
     val mergedConnections = Solver.mergeConnecitons(cityGraph, Pair("0", "1"))
