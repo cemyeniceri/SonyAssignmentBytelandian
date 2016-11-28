@@ -5,6 +5,7 @@ import scala.annotation.tailrec
   */
 object Solver {
 
+  //
   def evaluateStepCount(cityGraph: Map[String, Set[String]]): Int = {
     evaluateStepCountRec(0, cityGraph)
   }
@@ -26,6 +27,7 @@ object Solver {
     createConnectedCitiesRec(cityGraph, cityGraph, List())
   }
 
+  //consCityGraph inputundan daolyı tailRec değil
   def createConnectedCitiesRec(consCityGraph: Map[String, Set[String]], cityGraph: Map[String, Set[String]], acc: List[Pair]): List[Pair] = {
     if(cityGraph.isEmpty)
       acc

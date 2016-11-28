@@ -7,7 +7,7 @@ object ByteLandian extends App{
 
   rawInput.map { t =>
 
-    val cityGraph = InputParser.createCityStructure(t)
+    val cityGraph = InputParser.createCityStructureWithCrossCheck(t)
     val numberOfSteps = Solver.evaluateStepCount(cityGraph)
 
     println(s"Number of Steps : $numberOfSteps")
@@ -20,11 +20,11 @@ object ByteLandian extends App{
 
     (0 until numberOfTestCases).map{ x=>
 
-      println("Please enter the number of cities:")
+      println("Please enter the number of cities: ")
       val numberOfCities = scala.io.StdIn.readInt
       require(2 <= numberOfCities && numberOfCities <= 600, "number of cities should be between [2, 600]")
 
-      println(s"Please enter the route connections")
+      println(s"Please enter the route connections: ")
       val roads = scala.io.StdIn.readLine().split(' ').toList
       require(roads.size == numberOfCities - 1, "number of routes should be 1 less than number of cities")
       require(roads.forall((0 until numberOfCities).map(_.toString).contains), "routes should be between the cities")
